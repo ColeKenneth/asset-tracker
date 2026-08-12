@@ -1,0 +1,57 @@
+/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse IDE configuration files
+.settings/
+.classpath
+.project
+.metadata/
+bin/
+
+# Visual Studio Code configuration folder
+.vscode/
+
+# NetBeans configuration folder
+nbproject/
+private/
+
+.mvn/wrapper/maven-wrapper.jar
+
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows System Files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs.repo
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# Log Files & Runtime Data
+*.log
+logs/
+*.sqlite
+
+# Application Configuration & Secrets
+src/main/resources/application.properties
+src/main/resources/application-*.properties
+src/main/resources/application-*.yml
+src/main/resources/application-*.yaml
