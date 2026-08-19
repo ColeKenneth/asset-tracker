@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -23,6 +24,7 @@ public class AssetController {
     private final AssetService assetService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AssetResponse> createAsset(@Valid @RequestBody CreateAssetRequest request) {
         var createdAsset = assetService.createAsset(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -33,50 +35,50 @@ public class AssetController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AssetResponse> getAssetById(@PathVariable Long id) {
         return ResponseEntity.ok(assetService.getAssetById(id));
     }
 
     @GetMapping("/tag/{assetTag}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AssetResponse> getAssetByTag(@PathVariable String assetTag) {
         return ResponseEntity.ok(assetService.getAssetByTag(assetTag));
     }
 
-    @GetMapping
-    public ResponseEntity<List<AssetResponse>> getAllAssets(@RequestParam(required = false)AssetStatus status) {
-        if (status != null) {
-            return ResponseEntity.ok(assetService.getAssetsByStatus(status));
-        }
-
-        return ResponseEntity.ok(assetService.getAllAssets());
-    }
-
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AssetResponse> updateAsset(@PathVariable Long id, @Valid @RequestBody UpdateAssetRequest request) {
         return ResponseEntity.ok(assetService.updateAsset(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
         assetService.deleteAsset(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/assign")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AssetResponse> assignAsset(@PathVariable Long id, @Valid @RequestBody AssignAssetRequest request) {
         return ResponseEntity.ok(assetService.assignAsset(id, request));
     }
 
     @PostMapping("/{id}/return")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AssetResponse> returnAsset(@PathVariable Long id) {
         return ResponseEntity.ok(assetService.returnAsset(id));
     }
 
     @GetMapping("/{id}/history")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<AssetAssignmentHistoryResponse>> getAssetHistory(@PathVariable Long id) {
         return ResponseEntity.ok(assetService.getAssetHistory(id));
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Page<AssetResponse>> getAllAssets(
             @RequestParam(required = false) AssetStatus status,
             @RequestParam(required = false) Long categoryId,

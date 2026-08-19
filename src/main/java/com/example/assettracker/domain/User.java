@@ -38,6 +38,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    public User(String email, String password, String firstName, String lastName, Role role) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
+
     @Override
     @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
