@@ -42,7 +42,7 @@ public class AssetControllerSecurityTest {
                             "categoryId": 1
                         }
                         """))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -50,6 +50,6 @@ public class AssetControllerSecurityTest {
         mockMvc.perform(post("/api/v1/assets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
