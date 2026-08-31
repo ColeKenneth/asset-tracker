@@ -13,6 +13,8 @@
 
     <div th:if="${param.logout}" class="alert alert-success" role="alert">You have been logged out.</div>
 
+    <div th:if="${param.registered}" class="alert alert-success" role="alert">Account created successfully! You can now log in.</div>
+
     <form th:action="@{/login}" method="post">
         <div class="mb-3">
             <label for="username" class="form-label">Email Address:</label>
@@ -24,6 +26,9 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Log in</button>
     </form>
+    <div class="text-center mt-3">
+        <small>Don't have an account? <a th:href="@{/register}">Sign up here</a></small>
+    </div>
 </div>
 </body>
 </html>

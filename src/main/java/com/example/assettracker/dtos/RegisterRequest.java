@@ -9,4 +9,7 @@ public record RegisterRequest(
         String password,
         Role role
 ) {
+    public RegisterRequest() {
+        this("", "", "", "", Role.USER);
+    }
 }
