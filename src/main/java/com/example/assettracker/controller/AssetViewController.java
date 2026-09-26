@@ -1,18 +1,17 @@
 package com.example.assettracker.controller;
 
+import com.example.assettracker.dtos.AssignAssetRequest;
 import com.example.assettracker.dtos.CreateAssetRequest;
 import com.example.assettracker.service.AssetService;
 import com.example.assettracker.service.CategoryService;
+import com.example.assettracker.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,6 +22,7 @@ import java.time.LocalDate;
 public class AssetViewController {
     private final AssetService assetService;
     private final CategoryService categoryService;
+    private final EmployeeService employeeService;
 
     @GetMapping
     public String listAssets(Model model) {
@@ -52,6 +52,33 @@ public class AssetViewController {
         }
 
         assetService.createAsset(request);
+        return "redirect:/assets";
+    }
+
+    @GetMapping("/{id}/assign")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showAssignForm(@PathVariable Long id, Model model) {
+        model.addAttribute("asset", assetService.getAssetById(id));
+        model.addAttribute("assignAssetRequest", new AssignAssetRequest(null));
+        model.addAttribute("employees", employeeService.getActiveEmployees());
+        return "assets/assign-form";
+    }
+
+    @PostMapping("/{id}/assign")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String assignAsset(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("assignAssetRequest") AssignAssetRequest request,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("asset", assetService.getAssetById(id));
+            model.addAttribute("employees", employeeService.getActiveEmployees());
+            return "assets/assign-form";
+        }
+
+        assetService.assignAsset(id, request);
         return "redirect:/assets";
     }
 }

@@ -9,6 +9,7 @@ import com.example.assettracker.repository.EmployeeRepository;
 import com.example.assettracker.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .status(EmployeeStatus.ACTIVE)
                 .build();
 
-        var saved = employeeRepository.save(employee);
-        return mapToResponse(saved);
+        try {
+            employeeRepository.save(employee);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Employee already exists: " + request.employeeId());
+        }
+        return mapToResponse(employee);
     }
 
     @Override
@@ -51,8 +56,60 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public EmployeeResponse getByEmployeeId(String employeeId) {
+        var employee = employeeRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with employee ID: " + employeeId));
+
+        return mapToResponse(employee);
+    }
+
+    @Override
     public List<EmployeeResponse> getAllEmployees() {
         return employeeRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public EmployeeResponse updateEmployee(Long id, CreateEmployeeRequest request) {
+        var entity =  employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + id));
+
+        if (!entity.getEmployeeId().equals(request.employeeId())) {
+            if (employeeRepository.findByEmployeeId(request.employeeId()).isPresent()) {
+                log.warn("Attempt to update ");
+                throw new IllegalArgumentException("Employee ID already exists: " + request.employeeId());
+            }
+            entity.setEmployeeId(request.employeeId());
+        }
+
+        entity.setFirstName(request.firstName());
+        entity.setLastName(request.lastName());
+        entity.setEmail(request.email());
+        entity.setDepartment(request.department());
+
+        log.info("Updated employee with ID: {}", id);
+        return mapToResponse(entity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmployee(Long id) {
+        var entity = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + id));
+
+        if (entity.getStatus() == EmployeeStatus.ACTIVE) {
+            throw new IllegalStateException("Cannot delete an employee who is active.");
+        }
+
+        employeeRepository.delete(entity);
+        log.info("Deleted employee with ID: {}", id);
+    }
+
+    @Override
+    public List<EmployeeResponse> getActiveEmployees() {
+        return employeeRepository.findAllByStatus(EmployeeStatus.ACTIVE).stream()
                 .map(this::mapToResponse)
                 .toList();
     }
