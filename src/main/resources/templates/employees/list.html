@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AssetFlow - Employee Director</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-brand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">AssetFlow</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/assets}">Assets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/employees}">Employees</a>
+                </li>
+            </ul>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="text-white me-3">Logged in as: <strong sec:authentication="name">User</strong></span>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Employee Directory</h2>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees/new}" class="btn btn-primary">+ Add Employee</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(employees)}">
+                    <td colspan="5" class="text-center py-4 text-muted">No employees found.</td>
+                </tr>
+                <tr th:each="emp : ${employees}">
+                    <td th:text="${emp.employeeId}">EMP-101</td>
+                    <td th:text="${emp.firstName + '' + emp.lastName}">Jane Doe</td>
+                    <td th:text="${emp.email}">jane.doe@company.com</td>
+                    <td th:text="${emp.department}">Engineering</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${emp.status.name() == 'ACTIVE' ? 'bg-success' : 'bg-secondary'}"
+                              th:text="${emp.status}">ACTIVE</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

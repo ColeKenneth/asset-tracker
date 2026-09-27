@@ -2,6 +2,7 @@ package com.example.assettracker.controller;
 
 import com.example.assettracker.dtos.AssignAssetRequest;
 import com.example.assettracker.dtos.CreateAssetRequest;
+import com.example.assettracker.dtos.UpdateAssetRequest;
 import com.example.assettracker.service.AssetService;
 import com.example.assettracker.service.CategoryService;
 import com.example.assettracker.service.EmployeeService;
@@ -79,6 +80,41 @@ public class AssetViewController {
         }
 
         assetService.assignAsset(id, request);
+        return "redirect:/assets";
+    }
+
+    @GetMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        var asset = assetService.getAssetById(id);
+
+        var request = new UpdateAssetRequest(
+                asset.id(),
+                asset.name(),
+                asset.status(),
+                asset.purchaseCost(),
+                null
+        );
+
+        model.addAttribute("asset", request);
+        model.addAttribute("id", id);
+        return "assets/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateAsset(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("asset") UpdateAssetRequest request,
+            BindingResult bindingResult,
+            Model model
+            ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("id", id);
+            return "assets/edit";
+        }
+
+        assetService.updateAsset(id, request);
         return "redirect:/assets";
     }
 }

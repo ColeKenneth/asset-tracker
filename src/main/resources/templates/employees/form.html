@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AssetFlow - Add Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container my-5" style="max-width: 600px;">
+    <div class="card shadow-sm p-4">
+        <h3 class="mb-4">Add New Employee</h3>
+
+        <form th:action="@{/employees}" th:object="${createEmployeeRequest}" method="post" novalidate>
+            <div class="mb-3">
+                <label for="employeeId" class="form-label">Employee ID</label>
+                <input type="text" class="form-control" id="employeeId" th:field="*{employeeId}"
+                th:classappend="${#fields.hasErrors('employeeId')} ? 'is-invalid')}" placeholder="EMP-001">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}">
+                    Employee ID is required.
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                    th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">
+                        First name is required.
+                    </div>
+                </div>
+
+                <div class="col">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                    th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
+                        Last name is required.
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}"
+                    th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" placeholder="employee@company.com">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                        Valid email address is required.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="department" th:field="*{department}"
+                    th:classappend="${#fields.hasErrors('department')} ? 'is-invalid'" placeholder="IT/Finance/HR">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('department')}" th:errors="*{department}">
+                        Department is required.
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="@{/employees}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Employee</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

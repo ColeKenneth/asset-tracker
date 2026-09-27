@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AssetFlow - Assign Asset</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container my-5" style="max-width: 500px;">
+    <div class="card shadow-sm p-4">
+        <h3 class="mb-2">Assign Hardware Asset</h3>
+        <p class="text-muted mb-4">Assigning asset: <strong th:text="${asset.name}">Laptop</strong></p>
+
+        <form th:action="@{/assets/{id}/assign(id=${asset.id})}" th:object="${assignAssetRequest}" method="post" novalidate>
+            <div class="mb-3">
+                <label for="employeeId" class="form-label">Select Employee</label>
+                <select class="form-select" id="employeeId" th:field="*{employeeId}"
+                        th:classappend="${#fields.hasErrors('employeeId')} ? 'is-invalid'">
+                    <option value="" disabled>Choose Active Employee</option>
+                    <option th:each="emp : ${employees}"
+                    th:value="${emp.id}"
+                    th:text="${emp.firstName + ' ' + emp.lastName + ' (' + emp.employeeId + ')'}">John Doe (EMP-001)</option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}">
+                    Employee selection is required.
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/assets}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Confirm Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

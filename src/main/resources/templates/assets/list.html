@@ -42,10 +42,11 @@
             <td>
                 <span class="badge bg-success" th:text="${asset.status}">AVAILABLE</span>
             </td>
-            <td sec:authorize="hasRole('ADMIN')">
-                <a th:href="@{/assets/edit/{id}(id=${asset.id})}" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
-                <form th:action="@{/assets/delete/{id}(id=${asset.id})}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete asset?')">Delete</button>
+            <td sec:authorize="hasRole('ADMIN')" class="text-end">
+                <a th:href="@{/assets/{id}/assign(id=${asset.id})}" class="btn btn-sm btn-outline-success me-1">Assign</a>
+                <a th:href="@{/assets/edit/{id}(id=${asset.id})}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                <form th:action="@{/assets/{id}/delete(id=${asset.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this asset?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                 </form>
             </td>
         </tr>

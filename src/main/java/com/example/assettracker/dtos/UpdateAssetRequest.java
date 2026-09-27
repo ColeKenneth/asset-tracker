@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public record UpdateAssetRequest(
+        Long id,
+
         @NotBlank(message = "Asset name cannot be left blank.")
         String name,
 
