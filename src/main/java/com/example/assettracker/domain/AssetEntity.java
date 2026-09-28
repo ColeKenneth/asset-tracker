@@ -40,7 +40,7 @@ public class AssetEntity {
     @Column(nullable = false, name = "purchase_date")
     private LocalDate purchaseDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 

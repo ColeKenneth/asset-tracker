@@ -38,18 +38,18 @@ public class AssetViewController {
                 "", "", "", BigDecimal.ZERO, LocalDate.now(), null)
         );
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "assets/form";
+        return "assets/create";
     }
 
-    @PostMapping
+    @PostMapping("/new")
     @PreAuthorize("hasRole('ADMIN')")
     public String createAsset(
-            @Valid @ModelAttribute("createAssetRequest") CreateAssetRequest request,
+            @Valid @ModelAttribute("assetRequest") CreateAssetRequest request,
             BindingResult bindingResult,
             Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAllCategories());
-            return "assets/form";
+            return "assets/create";
         }
 
         assetService.createAsset(request);

@@ -38,9 +38,9 @@ public class AssetServiceImpl implements AssetService {
 
         CategoryEntity category = null;
         if (request.categoryId() != null) {
-            log.warn("Category not found with ID {}", request.categoryId());
             category = categoryRepository.findById(request.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + request.categoryId()));
+            log.warn("Category not found with ID {}", request.categoryId());
         }
 
         var entity = AssetEntity.builder()
@@ -50,6 +50,7 @@ public class AssetServiceImpl implements AssetService {
                 .status(AssetStatus.AVAILABLE)
                 .purchaseCost(request.purchaseCost())
                 .purchaseDate(request.purchaseDate())
+                .category(category)
                 .build();
 
         AssetEntity saved = repository.save(entity);
