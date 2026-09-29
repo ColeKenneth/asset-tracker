@@ -44,7 +44,7 @@ public class AssetEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assigned_employee_id")
     private EmployeeEntity assignedEmployee;
 }

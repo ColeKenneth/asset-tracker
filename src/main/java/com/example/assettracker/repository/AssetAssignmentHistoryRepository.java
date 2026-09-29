@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface AssetAssignmentHistoryRepository extends JpaRepository<AssetAssignmentHistoryEntity, Long> {
     Optional<AssetAssignmentHistoryEntity> findByAssetIdAndReturnedAtIsNull(Long assetId);
-    List<AssetAssignmentHistoryEntity> findByAssetIdOrderByAssignedAtDesc(Long assetId);
+    void deleteByAssetId(Long assetId);
 }

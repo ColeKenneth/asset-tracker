@@ -76,7 +76,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<AssetResponse> getAllAssets() {
-        return repository.findAll().stream()
+        return repository.findAllWithRelations().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -102,8 +102,6 @@ public class AssetServiceImpl implements AssetService {
             var category = categoryRepository.findById(request.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + request.categoryId()));
             entity.setCategory(category);
-        } else {
-            entity.setCategory(null);
         }
 
         log.info("Updated asset ID: {}", id);
@@ -119,6 +117,8 @@ public class AssetServiceImpl implements AssetService {
         if (entity.getStatus() == AssetStatus.ASSIGNED) {
             throw new IllegalStateException("Cannot delete an asset that is assigned.");
         }
+
+        historyRepository.deleteByAssetId(id);
 
         repository.delete(entity);
         log.info("Deleted asset with ID: {}", id);

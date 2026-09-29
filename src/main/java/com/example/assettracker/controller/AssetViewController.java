@@ -3,6 +3,7 @@ package com.example.assettracker.controller;
 import com.example.assettracker.dtos.AssignAssetRequest;
 import com.example.assettracker.dtos.CreateAssetRequest;
 import com.example.assettracker.dtos.UpdateAssetRequest;
+import com.example.assettracker.exception.ResourceNotFoundException;
 import com.example.assettracker.service.AssetService;
 import com.example.assettracker.service.CategoryService;
 import com.example.assettracker.service.EmployeeService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -115,6 +117,21 @@ public class AssetViewController {
         }
 
         assetService.updateAsset(id, request);
+        return "redirect:/assets";
+    }
+
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteAsset(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            assetService.deleteAsset(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Asset deleted successfully!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Asset not found.");
+        }
+
         return "redirect:/assets";
     }
 }

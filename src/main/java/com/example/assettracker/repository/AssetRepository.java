@@ -31,4 +31,7 @@ OR LOWER(a.assetTag) LIKE LOWER(CONCAT('%', :search, '%')))
             @Param("search") String search,
             Pageable pageable
     );
+
+    @Query("SELECT a FROM AssetEntity a LEFT JOIN FETCH a.category LEFT JOIN FETCH a.assignedEmployee")
+    List<AssetEntity> findAllWithRelations();
 }
