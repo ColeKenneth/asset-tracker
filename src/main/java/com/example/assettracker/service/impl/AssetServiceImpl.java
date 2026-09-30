@@ -189,7 +189,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional(readOnly = true)
     public Page<AssetResponse> getAllAssets(AssetStatus status, Long categoryId, String search, Pageable pageable) {
-        return repository.findWithFilters(status, categoryId, search, pageable)
+        String cleanSearch = (search != null && !search.trim().isEmpty()) ? search.trim().toLowerCase() : null;
+
+        return repository.findWithFilters(status, categoryId, cleanSearch, pageable)
                 .map(this::mapToResponse);
     }
 
