@@ -33,6 +33,16 @@ public class AssetViewController {
         return "assets/list";
     }
 
+    @GetMapping("/{id}")
+    public String showAssetDetails(@PathVariable Long id, Model model) {
+        var asset = assetService.getAssetById(id);
+        var historyList = assetService.getAssetHistory(id);
+
+        model.addAttribute("asset", asset);
+        model.addAttribute("historyList", historyList);
+        return "assets/details";
+    }
+
     @GetMapping("/new")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {

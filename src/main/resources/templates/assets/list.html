@@ -37,7 +37,9 @@
         <tbody>
         <tr th:each="asset : ${assets}">
             <td th:text="${asset.assetTag}">LAP-001</td>
-            <td th:text="${asset.name}">MacBook Pro</td>
+            <td>
+                <a th:href="@{/assets/{id}(id=${asset.id})}" class="text-decoration-none fw-bold text-dark" th:text="${asset.name}">MacBook Pro</a>
+            </td>
             <td th:text="${asset.categoryName}">Laptops</td>
             <td>
                 <span class="badge bg-success" th:text="${asset.status}">AVAILABLE</span>
