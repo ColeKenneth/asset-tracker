@@ -4,6 +4,7 @@ import com.example.assettracker.domain.EmployeeEntity;
 import com.example.assettracker.domain.EmployeeStatus;
 import com.example.assettracker.dtos.CreateEmployeeRequest;
 import com.example.assettracker.dtos.EmployeeResponse;
+import com.example.assettracker.dtos.UpdateEmployeeRequest;
 import com.example.assettracker.exception.ResourceNotFoundException;
 import com.example.assettracker.repository.EmployeeRepository;
 import com.example.assettracker.service.EmployeeService;
@@ -72,22 +73,30 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public EmployeeResponse updateEmployee(Long id, CreateEmployeeRequest request) {
+    public EmployeeResponse updateEmployee(Long id, UpdateEmployeeRequest request) {
         var entity =  employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + id));
 
         if (!entity.getEmployeeId().equals(request.employeeId())) {
             if (employeeRepository.findByEmployeeId(request.employeeId()).isPresent()) {
-                log.warn("Attempt to update ");
+                log.warn("Attempt to update employee with ID of {}", request.employeeId());
                 throw new IllegalArgumentException("Employee ID already exists: " + request.employeeId());
             }
             entity.setEmployeeId(request.employeeId());
         }
 
+        if (!entity.getEmail().equalsIgnoreCase(request.email())) {
+            if (employeeRepository.findByEmail(request.email()).isPresent()) {
+                log.warn("Attempt to update employee with email: {}", request.email());
+                throw new IllegalArgumentException("Email already exists: " + request.email());
+            }
+            entity.setEmail(request.email());
+        }
+
         entity.setFirstName(request.firstName());
         entity.setLastName(request.lastName());
-        entity.setEmail(request.email());
         entity.setDepartment(request.department());
+        entity.setStatus(request.status());
 
         log.info("Updated employee with ID: {}", id);
         return mapToResponse(entity);
