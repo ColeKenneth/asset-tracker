@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"  lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Asset Details - AssetFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container my-5">
+    <div class="mb-3">
+        <a th:href="@{/assets}" class="btn btn-outline-secondary btn-sm">&lAarr; Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="card-title mb-1" th:text="${asset.name()}">Dell XPS 15</h3>
+                <span class="badge bg-secondary me-2" th:text="${asset.assetTag()}">AST-1002</span>
+                <span th:classappend="${asset.status.name() == 'AVAILABLE' ? 'bg-success' : 'bg-primary'}"
+                class="badge" th:text="${asset.status}">AVAILABLE</span>
+            </div>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:if="${asset.status.name() == 'AVAILABLE'}" th:href="@{/assets/{id}/assign(id=${asset.id})}"
+                   class="btn btn-success me-2">Assign Asset</a>
+                <a th:href="@{/assets/edit/{id}(id=${asset.id()})}" class="btn btn-primary">Edit Asset</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold">General Information</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Serial Number:</strong>
+                        <span th:text="${asset.serialNumber()}">SN-99812</span>
+                    </li>
+
+                    <li class="list-group-item"><strong>Category:</strong>
+                    <span th:text="${asset.categoryName() != null ? asset.categoryName() : 'Uncategorized'}">Laptops</span>
+                    </li>
+
+                    <li class="list-group-item"><strong>Purchase Cost:</strong>
+                    <span th:text="${asset.purchaseCost()}">1200.00</span>
+                    </li>
+
+                    <li class="list-group-item"><strong>Purchase Date:</strong>
+                    <span th:text="${asset.purchaseDate()}">2026-01-15</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white fw-bold">Current Assignment</div>
+                <div class="card-body">
+                    <div th:if="${asset.assignedEmployeeName() == null}" class="text-muted py-3">
+                        This asset is currently in inventory and not assigned to anyone.
+                    </div>
+
+                    <div th:if="${asset.assignedEmployeeName() != null}">
+                        <p class="mb-1"><strong>Assigned to:</strong><span th:text="${asset.assignedEmployeeName()}">John Doe</span></p>
+                        <form sec:authorize="hasRole('ADMIN')" th:action="@{/api/v1/assets/{id}/return(id=${asset.id})}" method="post" class="mt-3">
+                            <button type="submit" class="btn btn-warning btn-sm">Return to Inventory</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white fw-bold">Assignment History</div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Employee</th>
+                    <th>Assigned Date</th>
+                    <th>Returned Date</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="history: ${historyList}">
+                    <td th:text="${history.employeeName}">John Doe</td>
+                    <td th:text="${#temporals.format(history.assignedAt, 'yyyy-MM-dd HH:mm')}">2026-09-01 10:00</td>
+                    <td th:text="${history.returnedAt != null ? history.returnedAt : '-'}">-</td>
+                    <td>
+                        <span th:if="${history.returnedAt == null}" class="badge bg-primary">Active</span>
+                        <span th:if="${history.returnedAt != null}" class="badge bg-secondary">Returned</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(historyList)}">
+                    <td colspan="4" class="text-center py-4 text-muted">No assignment history recorded for this asset.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</html>

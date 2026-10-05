@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class AssetServiceImpl implements AssetService {
     private final EmployeeRepository employeeRepository;
     private final CategoryRepository categoryRepository;
     private final AssetAssignmentHistoryRepository historyRepository;
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     @Transactional
@@ -175,13 +177,14 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AssetAssignmentHistoryResponse> getAssetHistory(Long assetId) {
         if (!repository.existsById(assetId)) {
             log.warn("Asset not found with ID {}", assetId);
             throw new ResourceNotFoundException("Asset not found with ID: " + assetId);
         }
 
-        return historyRepository.findAll().stream()
+        return historyRepository.findByAssetIdOrderByAssignedAtDesc(assetId).stream()
                 .map(this::mapToHistoryResponse)
                 .toList();
     }
@@ -198,6 +201,7 @@ public class AssetServiceImpl implements AssetService {
         String employeeName = entity.getAssignedEmployee() != null ?
                 entity.getAssignedEmployee().getFirstName() + " " + entity.getAssignedEmployee().getLastName()
                 : null;
+
         return new AssetResponse(
                 entity.getId(),
                 entity.getAssetTag(),
@@ -215,6 +219,7 @@ public class AssetServiceImpl implements AssetService {
         String employeeName = history.getEmployee() != null ?
                 history.getEmployee().getFirstName() + " " + history.getEmployee().getLastName()
                 : null;
+
         return new AssetAssignmentHistoryResponse(
                 history.getId(),
                 history.getAsset().getId(),
