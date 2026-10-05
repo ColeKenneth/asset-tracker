@@ -1,6 +1,8 @@
 package com.example.assettracker.controller;
 
 import com.example.assettracker.dtos.CreateEmployeeRequest;
+import com.example.assettracker.dtos.UpdateEmployeeRequest;
+import com.example.assettracker.exception.ResourceNotFoundException;
 import com.example.assettracker.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/employees")
@@ -43,6 +43,39 @@ public class EmployeeViewController {
         }
 
         employeeService.createEmployee(request);
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        var employee = employeeService.getEmployeeById(id);
+        var updateRequest = new UpdateEmployeeRequest(
+                employee.employeeId(),
+                employee.firstName(),
+                employee.lastName(),
+                employee.email(),
+                employee.department(),
+                employee.status()
+        );
+
+        model.addAttribute("employeeId", id);
+        model.addAttribute("updateEmployeeRequest", updateRequest);
+        return "employees/form";
+    }
+
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            employeeService.deleteEmployee(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Employee was deleted successfully.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Employee not found.");
+        }
+
         return "redirect:/employees";
     }
 

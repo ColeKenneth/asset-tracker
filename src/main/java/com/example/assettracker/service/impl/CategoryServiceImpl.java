@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -48,6 +49,14 @@ public class CategoryServiceImpl implements CategoryService {
         var entity = new CategoryEntity();
         entity.setName(request.name());
         entity.setDescription(request.description());
+
+        String generatedCode = request.name()
+                .trim()
+                .toUpperCase()
+                .replaceAll("[^A-Z0-9]+", "_")
+                .replaceAll("^_+|_+$", "");
+
+        entity.setCode(generatedCode);
 
         var saved = categoryRepository.save(entity);
         log.info("Successfully created category with ID: {}", saved.getCategoryId());

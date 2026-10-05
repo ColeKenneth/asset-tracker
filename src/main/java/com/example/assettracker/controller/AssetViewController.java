@@ -50,6 +50,7 @@ public class AssetViewController {
                 "", "", "", BigDecimal.ZERO, LocalDate.now(), null)
         );
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("employees", employeeService.getAllEmployees());
         return "assets/create";
     }
 
