@@ -1,5 +1,7 @@
 package com.example.assettracker.controller;
 
+import com.example.assettracker.domain.AssetStatus;
+import com.example.assettracker.dtos.AssetResponse;
 import com.example.assettracker.dtos.AssignAssetRequest;
 import com.example.assettracker.dtos.CreateAssetRequest;
 import com.example.assettracker.dtos.UpdateAssetRequest;
@@ -9,6 +11,9 @@ import com.example.assettracker.service.CategoryService;
 import com.example.assettracker.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +33,23 @@ public class AssetViewController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public String listAssets(Model model) {
-        model.addAttribute("assets", assetService.getAllAssets());
+    public String listAssets(
+            @RequestParam(required = false) AssetStatus status,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String search,
+            @PageableDefault(size = 5, sort = "id") Pageable pageable,
+            Model model) {
+        Page<AssetResponse> assetPage = assetService.getAllAssets(status, categoryId, search, pageable);
+
+        model.addAttribute("assetPage", assetPage);
+        model.addAttribute("assets", assetPage.getContent());
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("statuses", AssetStatus.values());
+
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("selectedCategory", categoryId);
+        model.addAttribute("searchKeyword", search);
+
         return "assets/list";
     }
 
