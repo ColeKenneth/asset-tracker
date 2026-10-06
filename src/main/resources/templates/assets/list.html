@@ -36,9 +36,9 @@
                     <select name="categoryId" class="form-select">
                         <option value="">All categories</option>
                         <option th:each="cat : ${categories}"
-                                th:value="${cat.categoryId}"
+                                th:value="${cat.id}"
                                 th:text="${cat.name}"
-                                th:selected="${cat.categoryId == selectedCategory}">
+                                th:selected="${cat.id == selectedCategory}">
                         </option>
                     </select>
                 </div>
@@ -75,15 +75,12 @@
         <tbody>
         <tr th:each="asset : ${assets}">
             <td th:text="${asset.assetTag}">LAP-001</td>
-<<<<<<< HEAD
             <td>
                 <a th:href="@{/assets/{id}(id=${asset.id})}" class="text-decoration-none fw-bold text-dark" th:text="${asset.name}">MacBook Pro</a>
             </td>
             <td th:text="${asset.categoryName}">Laptops</td>
-=======
             <td th:text="${asset.name}">MacBook Pro</td>
             <td th:text="${asset.categoryName != null ? asset.categoryName : 'Uncategorized'}">Laptops</td>
->>>>>>> 204f68f (feat: pagination and search functionality)
             <td>
                 <span th:classappend="${asset.status.name() == 'AVAILABLE' ? 'bg-success' : 'bg-primary'}"
                       class="badge" th:text="${asset.status}">AVAILABLE</span>
