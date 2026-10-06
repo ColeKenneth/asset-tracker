@@ -96,6 +96,14 @@ public class AssetViewController {
         return "redirect:/assets";
     }
 
+    @PostMapping("/{id}/unassign")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String unassignAsset(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        assetService.unassignAsset(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Asset checked in successfully and returned to available pool.");
+        return "redirect:/assets";
+    }
+
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable Long id, Model model) {

@@ -17,6 +17,7 @@ public interface AssetService {
     AssetResponse updateAsset(Long id, UpdateAssetRequest request);
     void deleteAsset(Long id);
     AssetResponse assignAsset(Long assetId, AssignAssetRequest request);
+    void unassignAsset(Long assetId);
     AssetResponse returnAsset(Long assetId);
     List<AssetAssignmentHistoryResponse> getAssetHistory(Long id);
     Page<AssetResponse> getAllAssets(AssetStatus status, Long categoryId, String search, Pageable pageable);
