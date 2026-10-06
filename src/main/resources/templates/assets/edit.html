@@ -21,14 +21,21 @@
                     <input type="text" id="name" class="form-control" th:field="*{name}" />
                 </div>
 
+                <input type="hidden" th:field="*{status}">
+
                 <div class="mb-3">
-                    <label for="status" class="form-label fw-bold">Status</label>
-                    <select id="status" class="form-select" th:field="*{status}">
-                        <option th:each="s : ${T(com.example.assettracker.domain.AssetStatus).values()}"
-                                th:value="${s}"
-                                th:text="${s}">
-                        </option>
-                    </select>
+                    <label class="form-label fw-bold">Current Status</label>
+                    <div>
+                        <span class="badge bg-success fs-6"
+                              th:if="${#strings.equals(asset.status, 'AVAILABLE')}">AVAILABLE</span>
+                        <span class="badge bg-primary fs-6"
+                              th:if="${#strings.equals(asset.status, 'ASSIGNED')}">ASSIGNED</span>
+                        <span class="badge bg-warning text-dark fs-6"
+                              th:if="${#strings.equals(asset.status, 'UNDER_MAINTENANCE')}">UNDER MAINTENANCE</span>
+                    </div>
+                    <small class="form-text text-muted">
+                        Status changes automatically when hardware is assigned or checked in from the dashboard.
+                    </small>
                 </div>
 
                 <div class="mb-3">

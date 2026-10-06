@@ -133,10 +133,6 @@ public class AssetServiceImpl implements AssetService {
         var asset = repository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with ID of: " + assetId));
 
-        if (asset.getStatus() == AssetStatus.ASSIGNED) {
-            throw new IllegalStateException("Asset is already assigned to an employee.");
-        }
-
         var employee = employeeRepository.findById(request.employeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID of: " + request.employeeId()));
 
@@ -156,13 +152,21 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional
+    public void unassignAsset(Long assetId) {
+        var asset = repository.findById(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with ID: " + assetId));
+
+        asset.setAssignedEmployee(null);
+        asset.setStatus(AssetStatus.AVAILABLE);
+        repository.save(asset);
+        this.returnAsset(assetId);
+    }
+
+    @Override
+    @Transactional
     public AssetResponse returnAsset(Long assetId) {
         var asset = repository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with ID of: " + assetId));
-
-        if (asset.getStatus() != AssetStatus.ASSIGNED) {
-            throw new IllegalStateException("Asset is not currently assigned.");
-        }
 
         historyRepository.findByAssetIdAndReturnedAtIsNull(assetId).ifPresent(history -> {
             history.setReturnedAt(LocalDateTime.now());
