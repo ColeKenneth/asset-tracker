@@ -3,6 +3,9 @@ package com.example.assettracker.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "employees")
 @Getter
@@ -32,4 +35,7 @@ public class EmployeeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EmployeeStatus status;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AssetAssignmentHistoryEntity> assignmentHistories = new ArrayList<>();
 }

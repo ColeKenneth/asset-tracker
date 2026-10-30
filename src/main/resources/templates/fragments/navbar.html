@@ -22,9 +22,9 @@
             </ul>
 
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link btn btn-outline-light btn-sm text-white px-3" th:href="@{/logout}">Logout</a>
-                </li>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-link nav-link text-danger p-0">Logout</button>
+                </form>
             </ul>
         </div>
     </div>

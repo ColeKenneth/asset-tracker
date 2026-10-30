@@ -112,7 +112,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new IllegalStateException("Cannot delete an employee who is active.");
         }
 
-        employeeRepository.delete(entity);
+        try {
+            employeeRepository.delete(entity);
+            employeeRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("Cannot delete this employee because they have associated asset assignment history records. Consider marking them as INACTIVE instead.");
+        }
         log.info("Deleted employee with ID: {}", id);
     }
 

@@ -93,7 +93,7 @@ public class AssetViewController {
     @PreAuthorize("hasRole('ADMIN')")
     public String showAssignForm(@PathVariable Long id, Model model) {
         model.addAttribute("asset", assetService.getAssetById(id));
-        model.addAttribute("assignAssetRequest", new AssignAssetRequest(null));
+        model.addAttribute("assignAssetRequest", new AssignAssetRequest(null, ""));
         model.addAttribute("employees", employeeService.getActiveEmployees());
         return "assets/assign-form";
     }
