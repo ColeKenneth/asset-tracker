@@ -28,17 +28,20 @@ public class EmployeeViewController {
     @GetMapping("/new")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
-        model.addAttribute("createEmployeeRequest", new CreateEmployeeRequest("", "", "", "", ""));
+        model.addAttribute("employee", new CreateEmployeeRequest("", "", "", "", ""));
+        model.addAttribute("isEdit", false);
         return "employees/form";
     }
 
-    @PostMapping
+    @PostMapping("/new")
     @PreAuthorize("hasRole('ADMIN')")
     public String createEmployee(
-            @Valid @ModelAttribute("createEmployeeRequest") CreateEmployeeRequest request,
-            BindingResult bindingResult
+            @Valid @ModelAttribute("employee") CreateEmployeeRequest request,
+            BindingResult bindingResult,
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEdit", false);
             return "employees/form";
         }
 
@@ -59,9 +62,28 @@ public class EmployeeViewController {
                 employee.status()
         );
 
+        model.addAttribute("employee", updateRequest);
         model.addAttribute("employeeId", id);
-        model.addAttribute("updateEmployeeRequest", updateRequest);
+        model.addAttribute("isEdit", true);
         return "employees/form";
+    }
+
+    @PostMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateEmployee(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("employee") UpdateEmployeeRequest request,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("employeeId", id);
+            model.addAttribute("isEdit", true);
+            return "employees/form";
+        }
+
+        employeeService.updateEmployee(id, request);
+        return "redirect:/employees";
     }
 
     @PostMapping("/{id}/delete")
@@ -78,8 +100,4 @@ public class EmployeeViewController {
 
         return "redirect:/employees";
     }
-
-
-
-
 }
